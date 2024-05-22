@@ -1,91 +1,56 @@
 <template>
-  <main>
-    <form>
-      <h2>Войти</h2>
-      <input type="email" placeholder="E-mail" />
-      <input type="password" placeholder="Пароль" />
-      <button type="submit">Войти</button>
-      <a href="#">Регистрация</a>
-    </form>
-    <video class="bg" autoplay loop muted>
-      <source src="@/assets/video/smoke.mp4" type="video/mp4" />
-    </video>
+  <main class="h-lvh flex justify-center items-center p-4">
+    <UCard class="max-w-96 w-full">
+      <template #header>
+        <h1 class="text-3xl text-center">Регистрация</h1>
+      </template>
+        <UForm :validate="validate" :state="state" class="space-y-4" @submit="onSubmit">
+          <UFormGroup label="E-mail" name="email">
+            <UInput v-model="state.email" />
+          </UFormGroup>
+          <UFormGroup label="Пароль" name="password">
+            <UInput v-model="state.password" type="password" />
+          </UFormGroup>
+          <UFormGroup label="Повторить пароль" name="confirmPassword">
+            <UInput v-model="state.confirmPassword" type="password" />
+          </UFormGroup>
+            <UButton type="submit" block>
+              Зарегистрироваться
+            </UButton>
+
+            <div class="mt-1.5 text-center">
+              <ULink
+                to="/auth/login"
+                active-class="text-primary"
+                inactive-class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+              >
+                Войти
+              </ULink>
+            </div>
+        </UForm>
+    </UCard>
   </main>
 </template>
 
-<style>
-body {
-  margin: 0;
-  padding: 0;
-}
-h1 {
-  margin: 0;
-}
-body * {
-  box-sizing: border-box;
-}
-</style>
+<script setup lang="ts">
+  import type { FormError, FormSubmitEvent } from '#ui/types'
+  import { validationEmail } from '@/utils/validation'
 
-<style>
-form {
-  border-radius: 8px;
-  background-color: rgba(255, 255, 255, .3);
-  padding: 20px;
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-width: 300px;
-  border: 1px solid #808080;
-  box-shadow: 0px 0px 12px rgba(0, 0, 0, .4);
-}
-a {
-  color: #cfcfcf;
-}
-button {
-  border: none;
-  background: #fff;
-  color: #000;
-  margin-bottom: 10px;
-  width: 100%;
-  height: 35px;
-}
-input {
-  background: #808080;
-  height: 35px;
-  width: 100%;
-  color: #fff;
-  margin-bottom: 15px;
-  outline: none;
-  border: none;
-  border-radius: 4px;
-  padding: 10px;
-  box-sizing: border-box;
-}
-input::placeholder {
-  color: #cfcfcf;
-}
-form h2 {
-  color: #fff
-}
-main {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #000;
-  min-height: 100vh;
-  position: relative;
-}
-.bg {
-  background-image: url('~/assets/video/smoke.mp4');
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  min-width: 100%;
-  min-height: 100%;
-  height: 100%;
-  z-index: 1;
-}
-</style>
+  const state = reactive({
+    email: '',
+    password: '',
+    confirmPassword: ''
+  })
+
+  const validate = (state: any): FormError[] => {
+    const errors = []
+    const emailError = validationEmail(state.email)
+    if ( emailError.length) errors.push({ path: 'email', message: emailError })
+    if (state.password.length < 6) errors.push({ path: 'password', message: 'Введите минимум 6 символов' })
+    if (state.password !== state.confirmPassword) errors.push({ path: 'confirmPassword', message: 'Пароли не совпадают' })
+    return errors
+  }
+  const onSubmit = (event: FormSubmitEvent<any>) => {
+    console.log('onSubmit')
+  }
+</script>
